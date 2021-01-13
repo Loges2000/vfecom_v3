@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<h3>This is intial page</h3>
+
+    {% for item in items %}
+        {{item}}
+    {% endfor %}
+
+{% endblock %}

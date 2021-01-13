@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+<h3>Order Summary</h3>
+<div class="table-responsive text-nowrap">
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Item Title</th>
+        <th scope="col">Price</th>
+        <th scope="col">Quantity</th>
+        <th scope="col">Total</th>
+
+      </tr>
+    </thead>
+    <tbody>
+    {% for order_item in object.items.all %}
+      <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{order_item.item.title}}</td>
+        <td><i class="fas fa-rupee-sign"></i> {{order_item.item.price}}</td>
+        <td>
+           <a href="{% url 'vest_v3:remove-single-item-cart' order_item.item.slug %}"> <i class="fas fa-minus mr-2"></i> </a>
+            {{order_item.quantity}}
+            <a href="{% url 'vest_v3:add-single-item-to-cart' order_item.item.slug %}"><i class="fas fa-plus ml-2"></i></a>
+        </td>
+        <td>
+            {% if order_item.item.discount_price %}
+                <i class="fas fa-rupee-sign"></i> {{ order_item.get_total_discount_price }}
+                <span class="badge badge-primary">Savings <i class="fas fa-rupee-sign"></i> {{order_item.get_amount_saved }}</span>
+            {% else %}
+                <i class="fas fa-rupee-sign"></i> {{ order_item.get_total_item_price }}
+            {% endif %}
+            <a href="{% url 'vest_v3:remove-from-cart' order_item.item.slug %}"><i style="color: red;" class="fas fa-trash float-right"></i></a>
+        </td>
+
+      </tr>
+
+
+        </tr>
+    {% empty %}
+           <tr>
+            <td colspan="4">Your Cart is empty</td>
+
+              <tr>
+            <tr>
+            <td colspan="5">
+            <a class="btn btn-primary float-right" href="/">Continue Shopping</a>
+            </td>
+            </tr>
+    {% endfor %}
+
+
+
+    </tr>
+
+    {% if object.get_total %}
+    <tr>
+        <td colspan="4"><b>Order Total</b></td>
+        <td><b><i class="fas fa-rupee-sign"></i> {{ object.get_total }}</b></td>
+
+    </tr>
+    <tr>
+          <td colspan="5">
+            <a class="btn btn-warning float-right ml-2" href="{% url 'vest_v3:checkout-page' %}">Proceed to checkout </a>
+            <a class="btn btn-primary float-right" href="/">Continue Shopping</a>
+        </td>
+    </tr>
+
+    {% endif %}
+    </tbody>
+  </table>
+
+</div>
+</div>
+{% endblock %}

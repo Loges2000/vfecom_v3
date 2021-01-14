@@ -135,10 +135,13 @@
 
               <!--Card image-->
               <div class="view overlay">
-                <img src="{{ item.get_image_url }}"  class="card-img-top"
-                  alt="">
+
+                <img src="{{ item.image.url }}" class="card-img-top"
+                  alt="{{ item.title }}" style="height:200px; object-fit:contain;">
                 <a href="{{ item.get_absolute_url }}">
                   <div class="mask rgba-white-slight"></div>
+                  <!--img src="{{ item.image.url }}" alt="" class="img-fluid" style="height:200px; object-fit:contain;"-->
+
                 </a>
               </div>
               <!--Card image-->

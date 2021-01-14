@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 from pathlib import Path
+#from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '3of*-=hi^^u*bcv86u=gw#cgn(u#fdot9txd_%=jq$k3crw!ej'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','.pythonanywhere.com','.herokuapp.com']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -128,10 +129,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIR =  [os.path.join(BASE_DIR / 'static')] #[BASE_DIR / 'static'] os.path.join(BASE_DIR, 'assets'),
+STATICFILES_DIR =  [os.path.join(BASE_DIR, 'assets'),os.path.join(BASE_DIR / 'static')] #[BASE_DIR / 'static']
 STATIC_ROOT =  BASE_DIR / 'static_cdn'  #os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR / 'media_root')
 
 
 AUTHENTICATION_BACKENDS = [
@@ -152,3 +153,5 @@ LOGIN_REDIRECT_URL = '/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+#STRIPE_PUBLIC_KEY = config('STRIPE_TEST_PUBLIC_KEY')
+#STRIPE_SECRET_KEY = config('STRIPE_TEST_SECRET_KEY')

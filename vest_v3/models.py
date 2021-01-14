@@ -1,3 +1,4 @@
+from django.db.models.signals import post_save
 from django.conf import settings
 from django.db import models
 from django.db.models import Sum
@@ -29,7 +30,7 @@ LABEL_CHOICES =(
 class Item(models.Model):
 
     title = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='products')
+    image = models.ImageField()
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
     category = models.ForeignKey(Categories,on_delete=models.CASCADE)
@@ -124,4 +125,11 @@ class BillingAddress(models.Model):
         return self.user.username
 
 class Payment(models.Model):
-    pass
+    stripe_charge_id = models.CharField(max_length=50)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.SET_NULL, blank=True, null=True)
+    amount = models.FloatField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username

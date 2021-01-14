@@ -4,12 +4,21 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import *
 from django.contrib import messages
+from django.conf import settings
 from django.views.generic import DetailView, ListView,View,TemplateView
 from django.db.models import F
 from django.utils import timezone
 from .models import *
 import stripe
 import razorpay
+
+
+stripe.api_key = "sk_test_4eC39HqLyjWDarjtT1zdp7dc" #settings.STRIPE_SECRET_KEY
+
+# `source` is obtained with Stripe.js; see https://stripe.com/docs/payments/accept-a-payment-charges#web-create-token
+
+
+
 
 # Create your views here.
 
@@ -231,7 +240,7 @@ class CheckoutView(View):
             return redirect('vest_v3:checkout-page')
 
         except ObjectDoesNotExist:
-            messages.warning(self.request, "You do not have an active order")
+            messages.error(self.request, "You do not have an active order")
             return redirect("vest_v3:order-summary")
 
         print(self.request.POST)
@@ -240,9 +249,82 @@ class CheckoutView(View):
 #To handle payments from checkout view
 class PaymentView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'payment.html')
+        order = Order.objects.get(user=request.user, ordered=False)
+        context = {
+            'order': order
+        }
+        return render(request, 'payment.html', context)
+
+    def post(self, request, *args, **kwargs):
+        order = Order.objects.get(user = request.user, ordered = False)
+        amount = int(order.get_total() * 100)
+        token = request.POST.get('StripeToken')
+
+        try:
+            charge = stripe.Charge.create(
+                amount=amount,
+                currency="inr",
+                source=token,
+            )
+
+            # payments
+            payment = Payment()
+            payment.stripe_charge_id = charge['id']
+            payment.user = request.user
+            payment.amount = order.get_total()
+            payment.save()
+
+            # assign payment to the order
+            order.ordered = True
+            order.payment = payment
+            order.save()
+
+            messages.success(request, "your order was succesful")
+            return redirect('/')
+
+        except stripe.error.CardError as e:
+            # Since it's a decline, stripe.error.CardError will be caught
+            body = e.json_body
+            err = body.get('error',{})
+
+            messages.error(request, f"{err.get('message')}")
+            return redirect('/')
+
+        except stripe.error.RateLimitError as e:
+            messages.error(request, "Rate Limit Error")
+            return redirect('/')
+
+        except stripe.error.InvalidRequestError as e:
+           messages.error(request, "Invalid Parameters")
+           return redirect('/')
+
+        except stripe.error.AuthenticationError as e:
+            messages.error(request, "Not Authenticated")
+            return redirect('/')
 
 
+        except stripe.error.APIConnectionError as e:
+            messages.error(request, "Network Error")
+            return redirect('/')
+
+
+        except stripe.error.StripeError as e:
+            messages.error(request, "Something went wrong, you are not charged.Please try again!")
+            return redirect('/')
+
+
+        except Exception as e:
+            messages.error(request,"Critical error, we have been notified")
+            return redirect('/')
+
+#razorpay
+#client = razorpay.Client(auth = ('<key_id>', '<key_secret>'))
+#params_dict = {
+#    'order_id': '12122',
+#    'razorpay_payment_id': '332',
+#    'razorpay_signature': '23233'
+#}
+#client.utility.verify_payment_signature(params_dict)
 
 def home(request):
     context = {

@@ -1,6 +1,7 @@
 from django import template
 from vest_v3.models import *
 
+
 register = template.Library()
 
 

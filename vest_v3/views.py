@@ -35,8 +35,14 @@ class OrderSummaryView(LoginRequiredMixin, View):
             return redirect("/")
 
 class CategoryView(ListView):
-    model = Item
+    model = Categories
     template_name = 'categories.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['allcategories'] = Categories.objects.all()
+        return context
+
 
 #adding to cart
 @login_required

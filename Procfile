@@ -1,1 +1,1 @@
-web: gunicorn vest_v3.wsgi --log-file -
+web: gunicorn vest_v3.wsgi

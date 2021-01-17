@@ -16,6 +16,9 @@ urlpatterns = [
     path('remove-single-item-cart/<slug>/',views.remove_single_item_cart,name='remove-single-item-cart'),
     path('add-single-item-to-cart/<slug>/',views.add_single_item_to_cart,name='add-single-item-to-cart'),
     path('payment/',PaymentView.as_view(),name='payment'),#<payment_option>/
+    path('mail/', sendmail, name='mail'),
+    path('request-refund/', RequestRefundView.as_view(), name='request-refund'),
+
 
 
 

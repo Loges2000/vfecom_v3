@@ -2,11 +2,13 @@
 {% load static %}
 
 {% block content %}
+<main>
 <div class="container">
-<h3>Order Summary</h3>
-<div class="table-responsive text-nowrap">
+    <div class="table-responsive text-nowrap">
+        <h3>Order Summary</h3>
 
-  <table class="table">
+
+     <table class="table">
     <thead>
       <tr>
         <th scope="col">#</th>
@@ -35,7 +37,9 @@
             {% else %}
                 <i class="fas fa-rupee-sign"></i> {{ order_item.get_total_item_price }}
             {% endif %}
-            <a href="{% url 'vest_v3:remove-from-cart' order_item.item.slug %}"><i style="color: red;" class="fas fa-trash float-right"></i></a>
+            <a style="color: red;" href="{% url 'vest_v3:remove-from-cart' order_item.item.slug %}">
+                <i  class="fas fa-trash float-right"></i>
+            </a>
         </td>
 
       </tr>
@@ -52,12 +56,14 @@
             <a class="btn btn-primary float-right" href="/">Continue Shopping</a>
             </td>
             </tr>
-    {% endfor %}
-
-
-
     </tr>
-
+    {% endfor %}
+    {% if object.coupon %}
+        <tr>
+            <td colspan="4"><b>Coupon</b></td>
+            <td><b>-${{ object.coupon.amount }}</b></td>
+        </tr>
+    {% endif %}
     {% if object.get_total %}
     <tr>
         <td colspan="4"><b>Order Total</b></td>
@@ -66,7 +72,7 @@
     </tr>
     <tr>
           <td colspan="5">
-            <a class="btn btn-warning float-right ml-2" href="{% url 'vest_v3:checkout-page' %}">Proceed to checkout </a>
+            <a class="btn btn-warning float-right ml-2" href="/checkout-page/">Proceed to checkout </a>
             <a class="btn btn-primary float-right" href="/">Continue Shopping</a>
         </td>
     </tr>
@@ -77,4 +83,5 @@
 
 </div>
 </div>
+</main>
 {% endblock %}
